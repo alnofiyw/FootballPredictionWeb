@@ -1,0 +1,28 @@
+<table class="table table-striped table-bordered text-center align-middle">
+    <thead class="table-dark">
+        <tr>
+            <th>الترتيب</th>
+            <th>الاسم</th>
+            <th>النقاط</th>
+            <th>×5</th>
+            <th>×3</th>
+            <th>×2</th>
+            <th>×1</th>
+            <th>×-1</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in df.to_dict(orient="records") %}
+        <tr {% if row.id == current_user_id %} class="table-success fw-bold" {% endif %}>
+            <td>{{ row.rank }}</td>
+            <td>{{ row.name }}</td>
+            <td>{{ row.total_point }}</td>
+            <td>{{ row.exact_point_5 }}</td>
+            <td>{{ row.goal_diff_point_3 }}</td>
+            <td>{{ row.winner_only_point_2 }}</td>
+            <td>{{ row.draw_wrong_winner_1 }}</td>
+            <td>{{ row.no_participation_m1 }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

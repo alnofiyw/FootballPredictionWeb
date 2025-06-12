@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4" dir="rtl">
+    <h3 class="text-center mb-4">المباريات المفتوحة للتوقع</h3>
+
+    {% for match in matches %}
+    <div class="card mb-3 border-primary">
+        <div class="card-header bg-primary text-white d-flex justify-content-between">
+            <span>{{ match.home_team }} ضد {{ match.away_team }}</span>
+            <span>{{ match.match_stage }} - {{ match.match_time.strftime('%Y-%m-%d %H:%M') }}</span>
+        </div>
+        <div class="card-body">
+
+            <form method="POST" action="{{ url_for('user.save_prediction') }}">
+                <input type="hidden" name="match_id" value="{{ match.id }}">
+
+                <div class="row mb-2">
+                    <div class="col-md-6">
+                        <label>توقع الفريق الأول ({{ match.home_team }}):</label>
+                        <input type="number" name="pred_home" class="form-control" value="{{ match.pred_home or '' }}" min="0" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label>توقع الفريق الثاني ({{ match.away_team }}):</label>
+                        <input type="number" name="pred_away" class="form-control" value="{{ match.pred_away or '' }}" min="0" required>
+                    </div>
+                </div>
+
+                {% if match.match_stage == 'Knockout' and match.pred_home == match.pred_away %}
+                <div class="mb-3">
+                    <label>الفائز النهائي (لأن المباراة تعادل في مرحلة خروج المغلوب):</label>
+                    <div>
+                        <input type="radio" name="final_winner" value="{{ match.home_team }}" required>
+                        <label>{{ match.home_team }}</label>
+                        <input type="radio" name="final_winner" value="{{ match.away_team }}" required>
+                        <label>{{ match.away_team }}</label>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <img src="https://cdn-icons-png.flaticon.com/512/4108/4108361.png"
+                             width="28" style="filter: {{ 'none' if match.is_jocker else 'grayscale(100%)' }};" title="جوكر">
+
+                        <img src="https://cdn-icons-png.flaticon.com/512/17272/17272993.png"
+                             width="28" style="filter: {{ 'none' if match.is_hunter else 'grayscale(100%)' }};" title="هانتر">
+                    </div>
+
+                    <button class="btn btn-success" type="submit">
+                        {{ 'تعديل التوقع' if match.pred_home is not none else 'حفظ التوقع' }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info text-center">لا توجد مباريات مفتوحة حالياً</div>
+    {% endfor %}
+</div>
+{% endblock %}

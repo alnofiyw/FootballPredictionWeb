@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}المباريات المغلقة{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h3 class="text-center mb-4">المباريات المغلقة</h3>
+
+    {% for match in matches %}
+    <div class="card mb-3">
+        <div class="card-header bg-dark text-white">
+            {{ match.team1 }} ضد {{ match.team2 }} - {{ match.stage }}<br>
+            <small>{{ match.match_time.strftime('%Y-%m-%d %H:%M') }}</small>
+        </div>
+        <div class="card-body">
+            <p><strong>توقعك:</strong> {{ match.pred_home }} - {{ match.pred_away }} | {{ match.pred_outcome }} {% if match.pred_final_winner and match.stage == 'Knockout' %} ({{ match.pred_final_winner }}) {% endif %}</p>
+            <p><strong>النقاط:</strong>
+                {% if match.earned_point is not none %}
+                    <span class="badge bg-success">{{ match.earned_point }}</span>
+                {% else %}
+                    <span class="badge bg-secondary">لم تحسب بعد</span>
+                {% endif %}
+            </p>
+            <form method="get" action="{{ url_for('user.export_match', match_id=match.id) }}">
+                <button class="btn btn-sm btn-outline-info">عرض وتصدير التوقعات</button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+
+    {% if matches|length == 0 %}
+        <div class="alert alert-warning text-center">لا توجد مباريات مغلقة حتى الآن.</div>
+    {% endif %}
+</div>
+{% endblock %}

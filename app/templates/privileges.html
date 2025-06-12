@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}تفعيل الامتيازات{% endblock %}
+
+{% block content %}
+<div class="container mt-4 text-end" dir="rtl">
+    <h2 class="mb-4">تفعيل امتياز الجوكر أو الهانتر</h2>
+
+    {% if not can_jocker and not can_hunter %}
+        <div class="alert alert-info">ليس لديك أي امتياز متاح حالياً.</div>
+    {% endif %}
+
+    {% for match in matches %}
+    <div class="card mb-3">
+        <div class="card-header">
+            <strong>{{ match.team1 }} 🆚 {{ match.team2 }}</strong> — {{ match.stage }}
+        </div>
+        <div class="card-body">
+            <p><strong>توقيت المباراة:</strong> {{ match.date_time.strftime('%Y-%m-%d %H:%M') }}</p>
+
+            <form action="{{ url_for('user.apply_privilege') }}" method="POST" class="d-flex flex-wrap gap-3">
+                <input type="hidden" name="match_id" value="{{ match.id }}">
+
+                {% if can_jocker %}
+                    <button name="privilege" value="jocker" class="btn btn-warning"
+                            {% if match.is_jocker %}disabled{% endif %}>
+                        ⭐ تفعيل الجوكر
+                    </button>
+                {% endif %}
+
+                {% if can_hunter %}
+                    <button name="privilege" value="hunter" class="btn btn-dark"
+                            {% if match.is_hunter %}disabled{% endif %}>
+                        🎯 تفعيل الهانتر
+                    </button>
+                {% endif %}
+
+                {% if match.is_jocker %}
+                    <span class="badge bg-warning text-dark">الجوكر مُستخدم</span>
+                {% endif %}
+                {% if match.is_hunter %}
+                    <span class="badge bg-secondary">الهانتر مُستخدم</span>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
